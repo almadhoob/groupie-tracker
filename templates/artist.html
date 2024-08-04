@@ -1,0 +1,109 @@
+<!-- templates/artists.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Name}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 16px;
+            padding: 20px;
+            width: 300px;
+        }
+        .card img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .card h2 {
+            color: #333;
+            margin-top: 10px;
+        }
+        .card p {
+            color: #666;
+            margin: 5px 0;
+        }
+        .card ul {
+            padding-left: 20px;
+        }
+        .card li {
+            margin-bottom: 5px;
+        }
+        .section-title {
+            font-weight: bold;
+            margin-top: 15px;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Artist Cards</h1>
+    <div class="card-container">
+    {{range .}}
+        <div class="card">
+            <img src="{{.Image}}" alt="{{.Name}}">
+            <h2>{{.Name}}</h2>
+            <p><strong>Creation Date:</strong> {{.CreationDate}}</p>
+            <p><strong>First Album:</strong> {{.FirstAlbum}}</p>
+
+            <p class="section-title">Members:</p>
+            <ul>
+                {{range .Members}}
+                <li>{{.}}</li>
+                {{end}}
+            </ul>
+
+            {{if .ConcertDates}}
+            <p class="section-title">Upcoming Concerts:</p>
+            <ul>
+                {{range $location, $dates := .ConcertLocations}}
+                    <li>{{$location}}: {{join $dates ", "}}</li>
+                {{end}}
+            </ul>
+            {{end}}
+
+            {{if .ConcertLocations}}
+            <p class="section-title">Concert Locations:</p>
+            <ul>
+                {{range .ConcertLocations}}
+                <li>{{.}}</li>
+                {{end}}
+            </ul>
+            {{end}}
+
+            {{if .ConcertRelations}}
+            <p class="section-title">Concert Details:</p>
+            {{range $location, $dates := .ConcertRelations.DatesLocations}}
+            <p><strong>{{$location}}:</strong></p>
+            <ul>
+                {{range $dates}}
+                <li>{{.}}</li>
+                {{end}}
+            </ul>
+            {{end}}
+            {{end}}
+        </div>
+    {{end}}
+    </div>
+</body>
+</html>

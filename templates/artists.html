@@ -1,0 +1,42 @@
+<!-- templates/artists.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Cards</title>
+    <style>
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px;
+            width: 300px;
+            display: inline-block;
+            vertical-align: top;
+        }
+        .card img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Artist Cards</h1>
+    {{range .}}
+    <div class="card">
+        <img src="{{.Image}}" alt="{{.Name}}">
+        <h2>{{.Name}}</h2>
+        <p><strong>Creation Date:</strong> {{.CreationDate}}</p>
+        <p><strong>First Album:</strong> {{.FirstAlbum}}</p>
+        <p><strong>Members:</strong></p>
+        <ul>
+            {{range .Members}}
+            <li>{{.}}</li>
+            {{end}}
+        </ul>
+    </div>
+    {{end}}
+</body>
+</html>
