@@ -46,6 +46,12 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 	if err != nil {
 		log.Printf("Error executing template: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
 	}
+}
+
+func headersWritten(w http.ResponseWriter) bool {
+	if rw, ok := w.(interface{ Written() bool }); ok {
+		return rw.Written()
+	}
+	return false
 }

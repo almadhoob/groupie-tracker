@@ -1,109 +1,90 @@
-<!-- templates/artists.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Name}}</title>
+    <title>{{.Name}} - Details</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background-color: #f4f4f4;
             margin: 0;
             padding: 20px;
         }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        .card-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin: 16px;
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
             padding: 20px;
-            width: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .card img {
+        .header {
+            text-align: center;
+        }
+        .header img {
+            border-radius: 8px;
             width: 100%;
             height: auto;
-            border-radius: 8px;
+            max-height: 400px;
+            object-fit: cover;
         }
-        .card h2 {
-            color: #333;
-            margin-top: 10px;
+        .header h1 {
+            margin-top: 20px;
+            font-size: 36px;
         }
-        .card p {
-            color: #666;
+        .details {
+            margin-top: 20px;
+        }
+        .details p {
+            margin: 10px 0;
+        }
+        .members, .locations {
+            margin-top: 20px;
+        }
+        .locations ul {
+            list-style: none;
+            padding: 0;
+        }
+        .locations li {
             margin: 5px 0;
-        }
-        .card ul {
-            padding-left: 20px;
-        }
-        .card li {
-            margin-bottom: 5px;
-        }
-        .section-title {
-            font-weight: bold;
-            margin-top: 15px;
-            color: #444;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Artist Cards</h1>
-    <div class="card-container">
-    {{range .}}
-        <div class="card">
+    <div class="container">
+        <div class="header">
             <img src="{{.Image}}" alt="{{.Name}}">
-            <h2>{{.Name}}</h2>
+            <h1>{{.Name}}</h1>
+        </div>
+        <div class="details">
             <p><strong>Creation Date:</strong> {{.CreationDate}}</p>
             <p><strong>First Album:</strong> {{.FirstAlbum}}</p>
-
-            <p class="section-title">Members:</p>
+        </div>
+        <div class="members">
+            <h2>Members</h2>
             <ul>
                 {{range .Members}}
                 <li>{{.}}</li>
                 {{end}}
             </ul>
-
-            {{if .ConcertDates}}
-            <p class="section-title">Upcoming Concerts:</p>
-            <ul>
-                {{range $location, $dates := .ConcertLocations}}
-                    <li>{{$location}}: {{join $dates ", "}}</li>
-                {{end}}
-            </ul>
-            {{end}}
-
-            {{if .ConcertLocations}}
-            <p class="section-title">Concert Locations:</p>
-            <ul>
-                {{range .ConcertLocations}}
-                <li>{{.}}</li>
-                {{end}}
-            </ul>
-            {{end}}
-
-            {{if .ConcertRelations}}
-            <p class="section-title">Concert Details:</p>
-            {{range $location, $dates := .ConcertRelations.DatesLocations}}
-            <p><strong>{{$location}}:</strong></p>
-            <ul>
-                {{range $dates}}
-                <li>{{.}}</li>
-                {{end}}
-            </ul>
-            {{end}}
-            {{end}}
         </div>
-    {{end}}
+        <div class="locations">
+            <h2>Concert Locations</h2>
+            <ul>
+                {{range $city, $dates := .ConcertLocations}}
+                <li>
+                    <strong>{{$city}}:</strong>
+                    {{range $dates}}<span>{{$dates}}</span> {{end}}
+                </li>
+                {{end}}
+            </ul>
+        </div>
     </div>
+
 </body>
 </html>

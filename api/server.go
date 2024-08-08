@@ -109,6 +109,7 @@ func HandleArtistDetail(w http.ResponseWriter, r *http.Request) {
 		artist.ConcertLocations = relData
 	}
 
+	// Directly call renderTemplate without attempting to capture an error
 	renderTemplate(w, "artist.html", artist)
 }
 

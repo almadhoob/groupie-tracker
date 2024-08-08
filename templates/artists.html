@@ -1,42 +1,60 @@
-<!-- templates/artists.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artist Cards</title>
+    <title>Artists</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
         .card {
-            border: 1px solid #ddd;
+            background-color: #fff;
             border-radius: 8px;
-            padding: 16px;
-            margin: 16px;
-            width: 300px;
-            display: inline-block;
-            vertical-align: top;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 15px;
+            width: 200px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.05);
         }
         .card img {
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
             width: 100%;
-            height: auto;
-            border-radius: 8px;
+            height: 200px;
+            object-fit: cover;
+        }
+        .card .name {
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>Artist Cards</h1>
-    {{range .}}
-    <div class="card">
-        <img src="{{.Image}}" alt="{{.Name}}">
-        <h2>{{.Name}}</h2>
-        <p><strong>Creation Date:</strong> {{.CreationDate}}</p>
-        <p><strong>First Album:</strong> {{.FirstAlbum}}</p>
-        <p><strong>Members:</strong></p>
-        <ul>
-            {{range .Members}}
-            <li>{{.}}</li>
-            {{end}}
-        </ul>
+
+    <div class="container">
+        {{range .}}
+        <a href="/artist/{{.ID}}" class="card">
+            <img src="{{.Image}}" alt="{{.Name}}">
+            <div class="name">{{.Name}}</div>
+        </a>
+        {{end}}
     </div>
-    {{end}}
+
 </body>
 </html>

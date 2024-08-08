@@ -1,0 +1,14 @@
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  
+  .card {
+    /* Your existing card styles */
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .card-link:hover .card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
