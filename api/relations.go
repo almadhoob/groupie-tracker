@@ -1,10 +1,11 @@
-// relations.go
 package api
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
+	"time"
 )
 
 type Relation struct {
@@ -12,11 +13,13 @@ type Relation struct {
 	DatesLocations map[string][]string `json:"datesLocations"`
 }
 
-type RelationResponse struct {
-	Index []Relation `json:"index"`
+type ProcessedRelation struct {
+	ID             int                 `json:"id"`
+	DatesLocations map[string][]string `json:"datesLocations"`
+	UniqueAllDates []string            `json:"uniqueAllDates"`
 }
 
-func GetRelations() (map[int]map[string][]string, error) {
+func GetRelations() (map[int]ProcessedRelation, error) {
 	resp, err := http.Get("https://groupietrackers.herokuapp.com/api/relation")
 	if err != nil {
 		return nil, err
@@ -24,10 +27,7 @@ func GetRelations() (map[int]map[string][]string, error) {
 	defer resp.Body.Close()
 
 	var relationResponse struct {
-		Index []struct {
-			ID             int                 `json:"id"`
-			DatesLocations map[string][]string `json:"datesLocations"`
-		} `json:"index"`
+		Index []Relation `json:"index"`
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&relationResponse)
@@ -35,21 +35,55 @@ func GetRelations() (map[int]map[string][]string, error) {
 		return nil, err
 	}
 
-	relations := make(map[int]map[string][]string)
-	for _, item := range relationResponse.Index {
-		relations[item.ID] = item.DatesLocations
+	processedRelations := make(map[int]ProcessedRelation)
+	for _, relation := range relationResponse.Index {
+		processed := ProcessedRelation{
+			ID:             relation.ID,
+			DatesLocations: make(map[string][]string),
+		}
+
+		allDates := []string{}
+		for location, dates := range relation.DatesLocations {
+			sortedDates := sortDates(dates)
+			processed.DatesLocations[location] = sortedDates
+			allDates = append(allDates, sortedDates...)
+		}
+
+		processed.UniqueAllDates = removeDuplicatesAndSort(allDates)
+		processedRelations[relation.ID] = processed
 	}
 
-	return relations, nil
+	return processedRelations, nil
 }
 
-func GetRelationsForArtist(artistID int) (map[string][]string, error) {
+func GetRelationsForArtist(artistID int) (ProcessedRelation, error) {
 	allRelations, err := GetRelations()
 	if err != nil {
-		return nil, err
+		return ProcessedRelation{}, err
 	}
-	if relations, ok := allRelations[artistID]; ok {
-		return relations, nil
+	if relation, ok := allRelations[artistID]; ok {
+		return relation, nil
 	}
-	return nil, fmt.Errorf("no relations found for artist ID %d", artistID)
+	return ProcessedRelation{}, fmt.Errorf("no relations found for artist ID %d", artistID)
+}
+
+func removeDuplicatesAndSort(strSlice []string) []string {
+	keys := make(map[string]bool)
+	list := []string{}
+	for _, entry := range strSlice {
+		if _, value := keys[entry]; !value {
+			keys[entry] = true
+			list = append(list, entry)
+		}
+	}
+	return sortDates(list)
+}
+
+func sortDates(dates []string) []string {
+	sort.Slice(dates, func(i, j int) bool {
+		date1, _ := time.Parse("02-01-2006", dates[i])
+		date2, _ := time.Parse("02-01-2006", dates[j])
+		return date2.Before(date1)
+	})
+	return dates
 }

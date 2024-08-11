@@ -76,11 +76,13 @@
         <div class="locations">
             <h2>Concert Locations</h2>
             <ul>
-                {{range $city, $dates := .ConcertLocations}}
-                <li>
-                    <strong>{{$city}}:</strong>
-                    {{range $dates}}<span>{{$dates}}</span> {{end}}
-                </li>
+                {{range $location, $dates := .ConcertLocations}}
+                <h3>{{$location}}</h3>
+                <ul>
+                    {{range $dates}}
+                    <li>{{.}}</li>
+                    {{end}}
+                </ul>
                 {{end}}
             </ul>
         </div>

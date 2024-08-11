@@ -17,6 +17,7 @@ type Artist struct {
 	ConcertDates     string              `json:"concertDates"`
 	Relations        string              `json:"relations"` // Change this to string
 	ConcertLocations map[string][]string `json:"-"`         // This will be populated later
+	UniqueDates      []string            `json:"-"`
 }
 
 func GetArtists() ([]Artist, error) {

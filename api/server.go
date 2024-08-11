@@ -10,10 +10,14 @@ import (
 )
 
 func HandleArtists(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" && r.URL.Path != "/artists" {
+		Render404(w)
+		return
+	}
 	artists, err := GetArtists()
 	if err != nil {
 		log.Printf("Error getting artists: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "500 - Failed to fetch artists data", http.StatusInternalServerError)
 		return
 	}
 
@@ -26,50 +30,21 @@ func HandleArtists(w http.ResponseWriter, r *http.Request) {
 
 	for i, artist := range artists {
 		if relData, ok := relations[artist.ID]; ok {
-			artists[i].ConcertLocations = relData
+			artists[i].ConcertLocations = relData.DatesLocations
+			artists[i].UniqueDates = relData.UniqueAllDates
 		}
 	}
-
-	renderTemplate(w, "artists.html", artists)
-}
-
-func extractDates(relations map[string][]string) []string {
-	var dates []string
-	for _, dateList := range relations {
-		dates = append(dates, dateList...)
-	}
-	return removeDuplicates(dates)
-}
-
-func removeDuplicates(strSlice []string) []string {
-	keys := make(map[string]bool)
-	list := []string{}
-	for _, entry := range strSlice {
-		if _, value := keys[entry]; !value {
-			keys[entry] = true
-			list = append(list, entry)
+	err = renderTemplate(w, "artists.html", artists)
+	if err != nil {
+		if strings.HasPrefix(err.Error(), "404") {
+			Render404(w)
+		} else {
+			log.Printf("Error rendering template: %v", err)
+			http.Error(w, "500 - Failed to render artists page", http.StatusInternalServerError)
 		}
+		return
 	}
-	return list
 }
-
-// func HandleLocations(w http.ResponseWriter, r *http.Request) {
-// 	locations, err := GetLocations()
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-// 	json.NewEncoder(w).Encode(locations)
-// }
-
-// func HandleDates(w http.ResponseWriter, r *http.Request) {
-// 	dates, err := GetDates()
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-// 	json.NewEncoder(w).Encode(dates)
-// }
 
 func HandleRelations(w http.ResponseWriter, r *http.Request) {
 	relations, err := GetRelations()
@@ -80,43 +55,46 @@ func HandleRelations(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(relations)
 }
 
-func (a *Artist) GetConcertDatesSlice() []string {
-	return strings.Split(a.ConcertDates, ",")
-}
-
 func HandleArtistDetail(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/artist/")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid artist ID", http.StatusBadRequest)
+		Render404(w)
 		return
 	}
 
 	artist, err := GetArtistByID(id)
 	if err != nil {
-		http.Error(w, "Artist not found", http.StatusNotFound)
+		http.Error(w, "404 - Artist not found", http.StatusNotFound)
 		return
 	}
 
-	relations, err := GetRelations()
+	relation, err := GetRelationsForArtist(artist.ID)
 	if err != nil {
-		log.Printf("Error getting relations: %v", err)
-		http.Error(w, "Error fetching artist data", http.StatusInternalServerError)
+		log.Printf("Error getting relations for artist %d: %v", artist.ID, err)
+		http.Error(w, "500 - Failed to fetch artist relations", http.StatusInternalServerError)
 		return
 	}
 
-	if relData, ok := relations[artist.ID]; ok {
-		artist.ConcertLocations = relData
-	}
+	artist.ConcertLocations = relation.DatesLocations
+	artist.UniqueDates = relation.UniqueAllDates
 
-	// Directly call renderTemplate without attempting to capture an error
-	renderTemplate(w, "artist.html", artist)
+	err = renderTemplate(w, "artist.html", artist)
+	if err != nil {
+		if strings.HasPrefix(err.Error(), "404") {
+			Render404(w)
+		} else {
+			log.Printf("Error rendering template: %v", err)
+			http.Error(w, "500 - Failed to render artist detail page", http.StatusInternalServerError)
+		}
+		return
+	}
 }
 
 func GetArtistByID(id int) (Artist, error) {
 	artists, err := GetArtists()
 	if err != nil {
-		return Artist{}, fmt.Errorf("error fetching artists: %v", err)
+		return Artist{}, fmt.Errorf("500 - error fetching artists: %v", err)
 	}
 
 	for _, artist := range artists {
@@ -125,13 +103,13 @@ func GetArtistByID(id int) (Artist, error) {
 		}
 	}
 
-	return Artist{}, fmt.Errorf("artist with ID %d not found", id)
+	return Artist{}, fmt.Errorf("404 - artist with ID %d not found", id)
 }
 
 func SetupRoutes() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", HandleArtists)
 	mux.HandleFunc("/artists", HandleArtists)
-	mux.HandleFunc("/artist/", HandleArtistDetail) // New route for artist detail
+	mux.HandleFunc("/artist/", HandleArtistDetail)
 	return mux
 }
