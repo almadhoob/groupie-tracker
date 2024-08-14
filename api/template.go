@@ -64,10 +64,3 @@ func Render404(w http.ResponseWriter) {
 		http.Error(w, "404 - Page not found", http.StatusNotFound)
 	}
 }
-
-func headersWritten(w http.ResponseWriter) bool {
-	if rw, ok := w.(interface{ Written() bool }); ok {
-		return rw.Written()
-	}
-	return false
-}

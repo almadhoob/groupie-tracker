@@ -109,6 +109,7 @@ func GetArtistByID(id int) (Artist, error) {
 func SetupRoutes() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", HandleArtists)
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	mux.HandleFunc("/artists", HandleArtists)
 	mux.HandleFunc("/artist/", HandleArtistDetail)
 	return mux

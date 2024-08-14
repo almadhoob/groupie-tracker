@@ -1,4 +1,3 @@
-// artists.go
 package api
 
 import (

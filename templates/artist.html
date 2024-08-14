@@ -1,92 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{.Name}} - Details</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            text-align: center;
-        }
-        .header img {
-            border-radius: 8px;
-            width: 100%;
-            height: auto;
-            max-height: 400px;
-            object-fit: cover;
-        }
-        .header h1 {
-            margin-top: 20px;
-            font-size: 36px;
-        }
-        .details {
-            margin-top: 20px;
-        }
-        .details p {
-            margin: 10px 0;
-        }
-        .members, .locations {
-            margin-top: 20px;
-        }
-        .locations ul {
-            list-style: none;
-            padding: 0;
-        }
-        .locations li {
-            margin: 5px 0;
-            padding: 10px;
-            background-color: #e9ecef;
-            border-radius: 4px;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+      }
+      .header img {
+        border-radius: 8px;
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+        object-fit: cover;
+      }
+      .header h1 {
+        margin-top: 20px;
+        font-size: 36px;
+      }
+      .details {
+        margin-top: 20px;
+      }
+      .details p {
+        margin: 10px 0;
+      }
+      .members,
+      .locations {
+        margin-top: 20px;
+      }
+      .locations ul {
+        list-style: none;
+        padding: 0;
+      }
+      .locations li {
+        margin: 5px 0;
+        padding: 10px;
+        background-color: #e9ecef;
+        border-radius: 4px;
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <div class="container">
-        <div class="header">
-            <img src="{{.Image}}" alt="{{.Name}}">
-            <h1>{{.Name}}</h1>
-        </div>
-        <div class="details">
-            <p><strong>Creation Date:</strong> {{.CreationDate}}</p>
-            <p><strong>First Album:</strong> {{.FirstAlbum}}</p>
-        </div>
-        <div class="members">
-            <h2>Members</h2>
-            <ul>
-                {{range .Members}}
-                <li>{{.}}</li>
-                {{end}}
-            </ul>
-        </div>
-        <div class="locations">
-            <h2>Concert Locations</h2>
-            <ul>
-                {{range $location, $dates := .ConcertLocations}}
-                <h3>{{$location}}</h3>
-                <ul>
-                    {{range $dates}}
-                    <li>{{.}}</li>
-                    {{end}}
-                </ul>
-                {{end}}
-            </ul>
-        </div>
+      <div class="header">
+        <img src="{{.Image}}" alt="{{.Name}}" />
+        <h1>{{.Name}}</h1>
+      </div>
+      <div class="details">
+        <p><strong>Creation Date:</strong> {{.CreationDate}}</p>
+        <p><strong>First Album:</strong> {{.FirstAlbum}}</p>
+      </div>
+      <div class="members">
+        <h2>Members</h2>
+        <ul>
+          {{range .Members}}
+          <li>{{.}}</li>
+          {{end}}
+        </ul>
+      </div>
+      <div class="locations">
+        <h2>Concert Locations</h2>
+        <ul>
+          {{range $location, $dates := .ConcertLocations}}
+          <h3>{{$location}}</h3>
+          <ul>
+            {{range $dates}}
+            <li>{{.}}</li>
+            {{end}}
+          </ul>
+          {{end}}
+        </ul>
+      </div>
     </div>
-
-</body>
+  </body>
 </html>
