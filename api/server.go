@@ -11,9 +11,10 @@ import (
 
 func HandleArtists(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" && r.URL.Path != "/artists" {
-		Render404(w)
+		http.Error(w, "404 - Page not found", http.StatusNotFound)
 		return
 	}
+
 	artists, err := GetArtists()
 	if err != nil {
 		log.Printf("Error getting artists: %v", err)
@@ -24,7 +25,7 @@ func HandleArtists(w http.ResponseWriter, r *http.Request) {
 	relations, err := GetRelations()
 	if err != nil {
 		log.Printf("Error getting relations: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "500 - Failed to get relations", http.StatusInternalServerError)
 		return
 	}
 
@@ -34,13 +35,15 @@ func HandleArtists(w http.ResponseWriter, r *http.Request) {
 			artists[i].UniqueDates = relData.UniqueAllDates
 		}
 	}
-	err = renderTemplate(w, "artists.html", artists)
+
+	err = renderTemplate(w, "index.html", artists)
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "404") {
-			Render404(w)
-		} else {
 			log.Printf("Error rendering template: %v", err)
-			http.Error(w, "500 - Failed to render artists page", http.StatusInternalServerError)
+			http.Error(w, "404 - Page not found", http.StatusNotFound)
+		} else if strings.HasPrefix(err.Error(), "500") {
+			log.Printf("Error rendering template: %v", err)
+			http.Error(w, "500 - Failed to render index page", http.StatusInternalServerError)
 		}
 		return
 	}
@@ -49,7 +52,8 @@ func HandleArtists(w http.ResponseWriter, r *http.Request) {
 func HandleRelations(w http.ResponseWriter, r *http.Request) {
 	relations, err := GetRelations()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error getting relations: %v", err)
+		http.Error(w, "500 - Failed to get relations", http.StatusInternalServerError)
 		return
 	}
 	json.NewEncoder(w).Encode(relations)
@@ -59,13 +63,15 @@ func HandleArtistDetail(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.TrimPrefix(r.URL.Path, "/artist/")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		Render404(w)
+		log.Printf("Error rendering template: %v", err)
+		http.Error(w, "404 - Page not found", http.StatusNotFound)
 		return
 	}
 
 	artist, err := GetArtistByID(id)
 	if err != nil {
-		http.Error(w, "404 - Artist not found", http.StatusNotFound)
+		log.Printf("Error rendering template: %v", err)
+		http.Error(w, "404 - Page not found", http.StatusNotFound)
 		return
 	}
 
@@ -82,10 +88,11 @@ func HandleArtistDetail(w http.ResponseWriter, r *http.Request) {
 	err = renderTemplate(w, "artist.html", artist)
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "404") {
-			Render404(w)
-		} else {
 			log.Printf("Error rendering template: %v", err)
-			http.Error(w, "500 - Failed to render artist detail page", http.StatusInternalServerError)
+			http.Error(w, "404 - Page not found", http.StatusNotFound)
+		} else if strings.HasPrefix(err.Error(), "500") {
+			log.Printf("Error rendering template: %v", err)
+			http.Error(w, "500 - Failed to render artist page", http.StatusInternalServerError)
 		}
 		return
 	}
@@ -94,7 +101,7 @@ func HandleArtistDetail(w http.ResponseWriter, r *http.Request) {
 func GetArtistByID(id int) (Artist, error) {
 	artists, err := GetArtists()
 	if err != nil {
-		return Artist{}, fmt.Errorf("500 - error fetching artists: %v", err)
+		return Artist{}, fmt.Errorf("500 - Failed to fetch artists data: %v", err)
 	}
 
 	for _, artist := range artists {
@@ -102,14 +109,18 @@ func GetArtistByID(id int) (Artist, error) {
 			return artist, nil
 		}
 	}
-
 	return Artist{}, fmt.Errorf("404 - artist with ID %d not found", id)
+}
+
+func faviconHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "static/favico.ico")
 }
 
 func SetupRoutes() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", HandleArtists)
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+	mux.HandleFunc("/favicon.ico", faviconHandler)
+	mux.HandleFunc("/", HandleArtists)
 	mux.HandleFunc("/artists", HandleArtists)
 	mux.HandleFunc("/artist/", HandleArtistDetail)
 	return mux

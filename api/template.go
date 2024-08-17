@@ -43,24 +43,10 @@ func setupTemplates() (*template.Template, error) {
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) error {
-	// Check if the template exists
-	if t := templates.Lookup(tmpl); t == nil {
-		return fmt.Errorf("404 - template %s not found", tmpl)
-	}
-
 	err := templates.ExecuteTemplate(w, tmpl, data)
 	if err != nil {
 		log.Printf("Error executing template: %v", err)
 		return fmt.Errorf("500 - failed to execute template: %v", err)
 	}
 	return nil
-}
-
-func Render404(w http.ResponseWriter) {
-	w.WriteHeader(http.StatusNotFound)
-	err := templates.ExecuteTemplate(w, "404.html", nil)
-	if err != nil {
-		log.Printf("Error rendering 404 template: %v", err)
-		http.Error(w, "404 - Page not found", http.StatusNotFound)
-	}
 }
