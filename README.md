@@ -3,7 +3,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://gitea.com/almadhoob/groupie-tracker">
+  <a href="https://github.com/almadhoob/groupie-tracker">
     <img src="static/images/logo.png" alt="Logo" width="256" height="256">
   </a>
 
@@ -12,12 +12,12 @@
   <p align="center">
     A simple web app for groupie tracking.
     <br />
-    <a href="https://gitea.com/almadhoob/groupie-tracker"><strong>Go to the repo »</strong></a>
+    <a href="https://github.com/almadhoob/groupie-tracker"><strong>Go to the repo »</strong></a>
     <br />
     <br />
-    <a href="https://gitea.com/almadhoob/groupie-tracker/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/almadhoob/groupie-tracker/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
-    <a href="https://gitea.com/almadhoob/groupie-tracker/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/almadhoob/groupie-tracker/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
 </div>
 
@@ -85,7 +85,7 @@ You only need a web browser (such as Mozilla Firefox) besides the following soft
 1. Clone the repo
 
    ```sh
-   git clone https://gitea.com/almadhoob/groupie-tracker.git
+   git clone https://github.com/almadhoob/groupie-tracker.git
    cd groupie-tracker
    ```
 
@@ -133,8 +133,8 @@ Don't forget to give the project a star! Thanks again!
 
 ## Authors
 
-- Ayoob Aloribi — [GitHub](https://github.com/aloribi)[LinkedIn](https://bh.linkedin.com/in/ayoob-aloribi/)
-- Ahmed Almadhoob — [GitHub](https://github.com/almadhoob)[LinkedIn](https://bh.linkedin.com/in/almadhoob/)
+- Ayoob Aloribi — [LinkedIn](https://bh.linkedin.com/in/ayoob-aloribi/)
+- Ahmed Almadhoob — [LinkedIn](https://bh.linkedin.com/in/almadhoob/)
 
 <p align="right">(<a href="#groupie-tracker">back to top</a>)</p>
 
